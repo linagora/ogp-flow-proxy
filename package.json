@@ -1,0 +1,8 @@
+{
+    "name": "Flow-proxy",
+    "description": "Flow proxy",
+    "version": "0.0.1",
+    "dependencies": {
+        "express": "4.14.0"
+    }
+}
