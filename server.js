@@ -1,12 +1,13 @@
 'use strict';
 
+const express = require('express');
 const controller = require('./controllers/controller');
 
 // Constants
  const PORT = 8080;
 
 // App
- const app = express();
+const app = express();
 app.get('/', function (req, res) {
   res.send('Hello world hojohahaha 123456789');
 });
