@@ -1,7 +1,7 @@
 {
    "Mode" : {
       "Replicated" : {
-         "Replicas" : 2
+         "Replicas" : 1
       }
    },
    "TaskTemplate" : {
@@ -28,7 +28,7 @@
          "Condition" : "on-failure"
       }
    },
-   "Name" : "web",
+   "Name" : "AppName",
    "UpdateConfig" : {
       "Delay" : 30000000000,
       "FailureAction" : "pause",
