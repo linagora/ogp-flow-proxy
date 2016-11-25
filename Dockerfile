@@ -1,7 +1,8 @@
 FROM nginx:1.11.5
 MAINTAINER "OpenPass Team" 
 
-RUN groupadd -r node && useradd -r -g node node
+RUN groupadd -r node && useradd -r -g node node \
+  && sed -i 's/user  nginx/user root/g' /etc/nginx/nginx.conf
 
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
