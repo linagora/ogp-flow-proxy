@@ -14,6 +14,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		  sudo wget -nv -O - https://get.docker.com/ | sh
 	  fi
     SHELL
+	config.vm.synced_folder ".", "/vagrant", type: "nfs"
 
     config.vm.define :node1 do |node1|
       node1.vm.provider :libvirt do |domain|
