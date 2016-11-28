@@ -4,7 +4,6 @@
     "version": "0.0.1",
     "dependencies": {
       "express": "4.14.0",
-      "docker-modem": "0.3.x",
-      "nginx-vhosts": "0.0.8"
+      "docker-modem": "0.3.x"
     }
 }
