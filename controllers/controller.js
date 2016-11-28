@@ -3,7 +3,7 @@
 const nginx = require('./utils/nginx');
 const swarm = require('./utils/swarm');
 
-const SERVICE_DEFAULT_PORT = 8080;
+const SERVICE_DEFAULT_PORT = 80;
 
 function create(req, res) {
     swarm.create(req.query.requestId, function(err, data) {
@@ -17,12 +17,14 @@ function create(req, res) {
         domain: req.query.domain
       };
 
-      nginx.create(opts, function(err) {
+      nginx.create(opts, function(err, stdout, stderr) {
+        console.log(1111, stdout, stderr);
+
         if (err) {
-          res.status(500).json({code: 500, message: 'Server error', details: err.message});
+          return  res.status(500).json({code: 500, message: 'Server error', details: err.message});
         }
 
-        res.status(200);
+        res.send(`Your application's address is http://${opts.name}.${opts.domain}`);
       });
     });
 }
