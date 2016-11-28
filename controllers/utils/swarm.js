@@ -4,6 +4,7 @@ const fs = require('fs');
 const dockerModem = require('docker-modem');
 
 const templatePath = '/usr/src/app/templates/services-create.json';
+const modem = new dockerModem();
 
 function _createTemplate(requestId, callback) {
   fs.readFile(templatePath, function(err, data) {
@@ -11,10 +12,41 @@ function _createTemplate(requestId, callback) {
       callback(err);
     }
 
+    const networks = [process.env.NET_APP, process.env.NET_PROXY];
     const templateObject = JSON.parse(fs.readFileSync(templatePath, 'utf8'));
+
     templateObject.name = requestId;
+    networks.map(net => {
+      templateObject.Networks.push({Target: net});
+    });
 
     callback(null, templateObject);
+  });
+}
+
+function _isServiceRunning(serviceName, callback) {
+   const optsf = {
+    path: '/tasks?',
+    method: 'GET',
+    options: {service: serviceName},
+    statusCodes: {
+      200: true,
+      500: 'Server error'
+    }
+  };
+
+  modem.dial(optsf, function(err, data) {
+    if (err) {
+      callback(err);
+    }
+    console.log(data[0]);
+      if (data[0]) {
+        if (data[0].Status.State === 'running') {
+        callback(null, true);
+      }
+    }
+
+    callback(null, false);
   });
 }
 
@@ -37,14 +69,11 @@ function create(requestId, callback) {
       }
     };
 
-    const modem = new dockerModem();
-
     modem.dial(optsf, function(err, data) {
       if (err) {
         callback(err);
       }
-
-      callback();
+        setTimeout(function() { callback(); }, 5000);
     });
   });
 }
