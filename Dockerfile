@@ -33,6 +33,8 @@ RUN apt-get update \
 
 WORKDIR /usr/src/app
 COPY ./ /usr/src/app
-
+RUN   rm /var/log/nginx/error.log &&  touch /var/log/nginx/error.log
+RUN   rm /var/log/nginx/access.log &&  touch /var/log/nginx/access.log
+EXPOSE 8080
 EXPOSE 8080
 CMD [ "./entrypoint.sh" ]
