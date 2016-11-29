@@ -45,5 +45,5 @@ function remove(req, res) {
 
 module.exports = {
   create,
-  stop
+  remove
 };
