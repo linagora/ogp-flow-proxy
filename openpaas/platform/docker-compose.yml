@@ -1,0 +1,28 @@
+version: '2'
+
+services:
+
+  esn:
+    extends:
+      file: ../docker-compose-commons.yml
+      service: esn
+    command: ["sh", "start.sh"]
+    links:
+      - redis
+      - mongo
+      - elasticsearch
+
+  redis:
+    extends:
+      file: ../docker-compose-commons.yml
+      service: redis
+
+  mongo:
+    extends:
+      file: ../docker-compose-commons.yml
+      service: mongo
+
+  elasticsearch:
+    extends:
+      file: ../docker-compose-commons.yml
+      service: elasticsearch
