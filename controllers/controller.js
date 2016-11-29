@@ -27,7 +27,20 @@ function create(req, res) {
   });
 }
 
-function stop() {
+function remove(req, res) {
+  nginx.remove(req.query.serviceName, (err) => {
+    if (err) {
+      return res.status(500).json({code: 500, message: 'Server error', details: err.message});
+    }
+
+    swarm.remove(req.query.serviceName, (err) => {
+      if (err) {
+        return res.status(500).json({code: 500, message: 'Server error', details: err.message});
+      }
+
+      res.status(200);
+    });
+  });
 }
 
 module.exports = {

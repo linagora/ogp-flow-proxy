@@ -4,7 +4,7 @@ const express = require('express');
 const controller = require('./controllers/controller');
 
 // Constants
- const PORT = 8080;
+const PORT = 8080;
 
 // App
 const app = express();

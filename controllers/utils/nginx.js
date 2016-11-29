@@ -34,7 +34,7 @@ function create(opts, callback) {
               }
 
               callback(checkErr);
-		        });
+            });
           } else {
             _reload(callback);
           }
@@ -45,7 +45,21 @@ function create(opts, callback) {
 }
 
 function remove(name, callback) {
+  const confPath = path.join(configDir, name + '.conf');
 
+  fs.access(confPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      return callback();
+    }
+
+    fs.unlink(confPath, (err) => {
+      if (err) {
+        return callback();
+      }
+
+      _reload(callback);
+    });
+  });
 }
 
 function _reload(callback) {

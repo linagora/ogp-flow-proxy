@@ -31,7 +31,7 @@ function create(requestId, callback) {
       statusCodes: {
         200: true, // unofficial, but proxies may return it
         201: true,
-        404: 'no such container',
+        404: 'no such service',
         406: 'impossible to attach',
         500: 'server error'
       }
@@ -43,11 +43,21 @@ function create(requestId, callback) {
   });
 }
 
-function stop() {
+function remove(serviceName, callback) {
+  const optsf = {
+    path: `/services/${serviceName}`,
+    method: 'DELETE',
+    statusCodes: {
+      200: true,
+      404: 'no such service',
+      500: 'server error'
+    }
+  };
 
+  modem.dial(optsf, callback);
 }
 
 module.exports = {
   create,
-  stop
+  remove
 };
