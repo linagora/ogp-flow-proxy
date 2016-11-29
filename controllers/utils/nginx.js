@@ -6,7 +6,7 @@ const path = require('path');
 
 const configDir = '/etc/nginx/conf.d/';
 
-function create(opts, cb) {
+function create(opts, callback) {
   const config = ''
         + 'server {\n'
         +   'listen 80; \n'
@@ -19,31 +19,41 @@ function create(opts, cb) {
         + '}';
   const confPath = path.join(configDir, opts.name + '.conf');
 
-  fs.writeFile(confPath, config, function(err) {
-    if (err) return cb(err)
+  fs.access(confPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      fs.writeFile(confPath, config, (err) => {
+        if (err) {
+          return callback(err)
+        }
 
-    _check(function(checkErr) {
-      if (checkErr) {
-        fs.unlink(confPath, function(err) {
-          if (err) return cb(err);
-          cb(checkErr);
-		});
-      } else {
-        _reload(cb);
-      }
-    });
+        _check(function(checkErr) {
+          if (checkErr) {
+            fs.unlink(confPath, (err) => {
+              if (err) {
+                return callback(err);
+              }
+
+              callback(checkErr);
+		        });
+          } else {
+            _reload(callback);
+          }
+        });
+      });
+    }
   });
 }
 
 function remove(name, callback) {
+
 }
 
-function _reload(cb) {
-  exec('nginx -s reload', cb);
+function _reload(callback) {
+  exec('nginx -s reload', callback);
 }
 
-function _check(cb) {
-  exec('nginx -t', cb);
+function _check(callback) {
+  exec('nginx -t', callback);
 }
 
 module.exports = {

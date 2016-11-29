@@ -7,53 +7,21 @@ const templatePath = '/usr/src/app/templates/services-create.json';
 const modem = new dockerModem();
 
 function _createTemplate(requestId, callback) {
-  fs.readFile(templatePath, function(err, data) {
-    if (err) {
-      callback(err);
-    }
+  const networks = [process.env.NET_APP, process.env.NET_PROXY];
+  const templateObject = JSON.parse(fs.readFileSync(templatePath, 'utf8'));
 
-    const networks = [process.env.NET_APP, process.env.NET_PROXY];
-    const templateObject = JSON.parse(fs.readFileSync(templatePath, 'utf8'));
-
-    templateObject.name = requestId;
-    networks.map(net => {
-      templateObject.Networks.push({Target: net});
-    });
-
-    callback(null, templateObject);
+  templateObject.name = requestId;
+  networks.map(net => {
+    templateObject.Networks.push({Target: net});
   });
-}
 
-function _isServiceRunning(serviceName, callback) {
-   const optsf = {
-    path: '/tasks?',
-    method: 'GET',
-    options: {service: serviceName},
-    statusCodes: {
-      200: true,
-      500: 'Server error'
-    }
-  };
-
-  modem.dial(optsf, function(err, data) {
-    if (err) {
-      callback(err);
-    }
-    console.log(data[0]);
-      if (data[0]) {
-        if (data[0].Status.State === 'running') {
-        callback(null, true);
-      }
-    }
-
-    callback(null, false);
-  });
+  callback(null, templateObject);
 }
 
 function create(requestId, callback) {
-  _createTemplate(requestId, function(err, tempalte) {
+  _createTemplate(requestId, (err, tempalte) => {
     if (err) {
-      callback(err);
+      return callback(err);
     }
 
     const optsf = {
@@ -69,11 +37,8 @@ function create(requestId, callback) {
       }
     };
 
-    modem.dial(optsf, function(err, data) {
-      if (err) {
-        callback(err);
-      }
-        setTimeout(function() { callback(); }, 5000);
+    modem.dial(optsf, (err, data) => {
+      setTimeout(function() { callback(); }, 5000);
     });
   });
 }

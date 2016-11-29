@@ -34,8 +34,5 @@
 		"FailureAction" : "pause",
 		"Parallelism" : 2
 	},
-	"Networks": [
-		{"Target":"NET_PROXY"},
-		{"Target":"NET_APP"}
-	]	
+	"Networks": []
 }
