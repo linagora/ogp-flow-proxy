@@ -40,6 +40,7 @@ node1$ docker service create \
 		--mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock 
 		--publish 80:80 \
 		--publish 8080:8080 \
+		--env NET_PROXY=proxy
 		--env NET_APP=appnet
 		flow-proxy
 ```
