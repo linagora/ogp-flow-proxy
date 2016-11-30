@@ -1,0 +1,167 @@
+[
+	{
+		"Mode" : {
+			"Replicated" : {
+				"Replicas" : 1
+			}
+		},
+		"TaskTemplate" : {
+			"ContainerSpec" : {
+				"Image" : "mongo:2.6.5"
+			},
+			"Resources" : {
+				"Reservations" : {},
+				"Limits" : {
+					"MemoryBytes" : 104857600
+				}
+			},
+			"Placement" : {},
+			"LogDriver" : {
+				"Options" : {
+					"max-size" : "10M",
+					"max-file" : "3"
+				},
+				"Name" : "json-file"
+			},
+			"RestartPolicy" : {
+				"MaxAttempts" : 10,
+				"Delay" : 10000000000,
+				"Condition" : "on-failure"
+			}
+		},
+		"Name" : "mongo",
+		"UpdateConfig" : {
+			"Delay" : 30000000000,
+			"FailureAction" : "pause",
+			"Parallelism" : 2
+		},
+		"Networks": []
+	},
+	{
+		"Mode" : {
+			"Replicated" : {
+				"Replicas" : 1
+			}
+		},
+		"TaskTemplate" : {
+			"ContainerSpec" : {
+				"Image" : "redis"
+			},
+			"Resources" : {
+				"Reservations" : {},
+				"Limits" : {
+					"MemoryBytes" : 104857600
+				}
+			},
+			"Placement" : {},
+			"LogDriver" : {
+				"Options" : {
+					"max-size" : "10M",
+					"max-file" : "3"
+				},
+				"Name" : "json-file"
+			},
+			"RestartPolicy" : {
+				"MaxAttempts" : 10,
+				"Delay" : 10000000000,
+				"Condition" : "on-failure"
+			}
+		},
+		"Name" : "",
+		"UpdateConfig" : {
+			"Delay" : 30000000000,
+			"FailureAction" : "pause",
+			"Parallelism" : 2
+		},
+		"Networks": []
+	},
+	{
+		"Mode" : {
+			"Replicated" : {
+				"Replicas" : 1
+			}
+		},
+		"TaskTemplate" : {
+			"ContainerSpec" : {
+				"Image" : "elasticsearch:2.2.1"
+			},
+			"Resources" : {
+				"Reservations" : {},
+				"Limits" : {
+					"MemoryBytes" : 104857600
+				}
+			},
+			"Placement" : {},
+			"LogDriver" : {
+				"Options" : {
+					"max-size" : "10M",
+					"max-file" : "3"
+				},
+				"Name" : "json-file"
+			},
+			"RestartPolicy" : {
+				"MaxAttempts" : 10,
+				"Delay" : 10000000000,
+				"Condition" : "on-failure"
+			}
+		},
+		"Name" : "",
+		"UpdateConfig" : {
+			"Delay" : 30000000000,
+			"FailureAction" : "pause",
+			"Parallelism" : 2
+		},
+		"Networks": []
+	},
+	{
+		"Mode" : {
+			"Replicated" : {
+				"Replicas" : 1
+			}
+		},
+		"TaskTemplate" : {
+			"ContainerSpec" : {
+				"Image" : "linagora/esn",
+				"Env": [
+					"MONGO_HOST=mongo",
+					"MONGO_PORT=27017",
+					"MONGO_DBNAME=esn_docker",
+					"MONGO_TIMEOUT=100000",
+					"REDIS_HOST=redis",
+					"REDIS_PORT=6379",
+					"WEB_HOST=127.0.0.1",
+					"WEB_PORT=8080",
+					"ELASTICSEARCH_HOST=elasticsearch",
+					"ELASTICSEARCH_PORT=9200",
+					"ELASTICSEARCH_INIT_TIMEOUT=120"
+				]
+			},
+			"Resources" : {
+				"Reservations" : {},
+				"Limits" : {
+					"MemoryBytes" : 104857600
+				}
+			},
+			"Placement" : {},
+			"LogDriver" : {
+				"Options" : {
+					"max-size" : "10M",
+					"max-file" : "3"
+				},
+				"Name" : "json-file"
+			},
+			"RestartPolicy" : {
+				"MaxAttempts" : 10,
+				"Delay" : 10000000000,
+				"Condition" : "on-failure"
+			}
+		},
+		"Name" : "",
+		"UpdateConfig" : {
+			"Delay" : 30000000000,
+			"FailureAction" : "pause",
+			"Parallelism" : 2
+		},
+		"Networks": []
+	}
+]
