@@ -35,18 +35,26 @@ node1$ docker build -t flow-proxy .
 ```
 ```
 node1$ docker service create \
-	    --name flow-proxy \
+	  --name flow-proxy \
 		--network proxy \
-		--mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock 
+		--mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
 		--publish 80:80 \
 		--publish 8080:8080 \
-		--env NET_PROXY=proxy
-		--env NET_APP=appnet
+		--env NET_PROXY=proxy \
+		--env NET_APP=appnet \
 		flow-proxy
 ```
 
 ## How to test
-Comming soon
 
- - curl :8080  via API RESTFull <= Input
- - curl :80   					<= Output
+Create new instance by issuing a POST request:
+
+```
+curl -XPOST '127.0.0.1:8080/api/deployments?requestId=anything&domain=linagora.com'
+```
+
+Take a coffee and enjoy the new instance created:
+
+```
+curl --header 'Host: http://linagora.com' http://127.0.0.1
+```

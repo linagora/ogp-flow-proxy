@@ -4,12 +4,12 @@ const fs = require('fs');
 const dockerModem = require('docker-modem');
 const _ = require('lodash');
 const q = require('q');
+const TEMPLATE = require('../../templates/stack-openpass.json');
 
-const templatePath = '/usr/src/app/templates/stack-openpass.json';
 const modem = new dockerModem();
 
 function _createTemplate(requestId) {
-  const templateObject = JSON.parse(fs.readFileSync(templatePath, 'utf8'));
+  const templateObject = _.cloneDeep(TEMPLATE);
 
   templateObject.Main = `${requestId}_${templateObject.Main}`;
 
@@ -97,4 +97,3 @@ module.exports = {
   create,
   remove
 };
-

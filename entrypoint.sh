@@ -1,4 +1,3 @@
 #!/bin/sh
 /etc/init.d/nginx start
-npm install && npm start
-
+npm install --production && npm start

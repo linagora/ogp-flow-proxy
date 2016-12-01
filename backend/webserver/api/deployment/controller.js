@@ -1,7 +1,7 @@
 'use strict';
 
-const nginx = require('./utils/nginx');
-const swarm = require('./utils/swarm');
+const nginx = require('../../../core/nginx');
+const swarm = require('../../../core/swarm');
 const request = require('request');
 
 const SERVICE_DEFAULT_PORT = 80;
