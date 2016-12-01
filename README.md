@@ -46,5 +46,15 @@ node1$ docker service create \
 ```
 
 ## How to test
- - curl :8080  via API RESTFull <= Input
- - curl :80   					<= Output
+
+Create new instance by issuing a POST request:
+
+```
+curl -XPOST '127.0.0.1:8080/api/deployments?requestId=anything&domain=linagora.com'
+```
+
+Take a coffee and enjoy the new instance created:
+
+```
+curl --header 'Host: http://linagora.com' http://127.0.0.1
+```
