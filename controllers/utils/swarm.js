@@ -11,6 +11,8 @@ const modem = new dockerModem();
 function _createTemplate(requestId) {
   const templateObject = JSON.parse(fs.readFileSync(templatePath, 'utf8'));
 
+  templateObject.Main = `${requestId}_${templateObject.Main}`;
+
   _.forEach(templateObject.Rules, (value, key) => {
     const serviceName = `${requestId}_${key}`;
 
@@ -71,7 +73,7 @@ function create(requestId, callback) {
   });
 
   q.all(promises).then(function() {
-    callback();
+    callback(null, template.Main);
   }, function(err) {
     callback(err);
   });

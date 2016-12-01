@@ -1,4 +1,5 @@
 {
+  "Main": "esn",
 	"Rules" : {
 		"Services" : [
 			"mongo",

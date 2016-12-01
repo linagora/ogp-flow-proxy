@@ -12,9 +12,16 @@ function create(opts, callback) {
         +   'listen 80; \n'
         +   `server_name ${opts.name}.${opts.domain}; \n`
         +   'location / { \n'
+        +     'proxy_http_version 1.1; \n'
+        +     'proxy_set_header Upgrade $http_upgrade; \n'
+        +     'proxy_set_header Connection "Upgrade"; \n'
+        +     'proxy_set_header X-Real-IP $remote_addr; \n'
+        +     'proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n'
+        +     'proxy_set_header Host $http_host; \n'
+        +     'proxy_set_header X-NginX-Proxy true; \n'
+        +     'proxy_redirect off; \n'
+        +     'proxy_buffering off; \n'
         +     `proxy_pass http://${opts.name}:${opts.port}; \n`
-        +     'proxy_set_header X-Forwarded-For $remote_addr;\n'
-        +     'proxy_buffering off;\n'
         +   '} \n'
         + '}';
   const confPath = path.join(configDir, opts.name + '.conf');

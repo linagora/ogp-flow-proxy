@@ -13,7 +13,13 @@ function create(req, res) {
       return res.status(500).json({code: 500, message: 'Server error', details: err.message});
     }
 
-    res.send(`Your application's address is http://${opts.name}.${opts.domain} \n This progress maybe take several minutes, we will send email to notify application's state`);
+    const service = {
+      name: data,
+      domain: req.query.domain
+    };
+    _monitoring(service);
+
+    res.send(`Your application's address is http://${service.name}.${service.domain} \n This progress maybe take several minutes, we will send email to notify application's state`);
   });
 }
 
@@ -33,18 +39,17 @@ function remove(req, res) {
   });
 }
 
-function monitoring() {
+function _monitoring(service) {
   const TIME_OUT = 60; // 10 minutes
   let counter = 0;
+  const interval = setInterval(function() {
+    counter++;
 
-  var interval = setInterval(function() {
-    counter ++;
-
-    request(`http://${service.name}.${service.domain}:8080/api/monitoring`, function(err, response, body) {
+    request(`http://${service.name}:8080/api/monitoring`, function(err, response, body) {
       if (!err && response.statusCode == 200) {
         const opts = {
           name: service.name,
-          port: service.port || SERVICE_DEFAULT_PORT,
+          port: service.port || 8080,
           domain: service.domain
         };
 
@@ -53,7 +58,7 @@ function monitoring() {
             console.log('Can not reload nginx');
           }
 
-            console.log('Deploying application is successfully');
+          console.log('Deploying application is successfully');
         });
 
         clearInterval(interval);
@@ -68,6 +73,5 @@ function monitoring() {
 
 module.exports = {
   create,
-  remove,
-  monitoring
+  remove
 };
