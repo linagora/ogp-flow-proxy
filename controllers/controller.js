@@ -2,7 +2,6 @@
 
 const nginx = require('./utils/nginx');
 const swarm = require('./utils/swarm');
-const scheduler = require('./utils/scheduler');
 const request = require('request');
 
 const SERVICE_DEFAULT_PORT = 80;
