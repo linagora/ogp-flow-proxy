@@ -2,10 +2,11 @@
 
 const express = require('express');
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
 const deploymentRoute = require('./api/deployment');
-const PORT = 8080;
 const app = express();
 
+app.use(bodyParser.json());
 app.use(morgan('dev'));
 
 app.get('/', function(req, res) {
@@ -14,5 +15,12 @@ app.get('/', function(req, res) {
 
 app.use('/api/deployments', deploymentRoute);
 
-app.listen(PORT);
-console.log('Running on http://localhost:' + PORT);
+function start() {
+  app.listen(8080, () => {
+    console.log('Flow-proxy server is listening on port 8080!');
+  });
+}
+
+module.exports = {
+  start,
+};

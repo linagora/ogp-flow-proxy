@@ -50,7 +50,7 @@ node1$ docker service create \
 Create new instance by issuing a POST request:
 
 ```
-curl -XPOST '127.0.0.1:8080/api/deployments?requestId=anything&domain=linagora&email=admin@linagora.com'
+curl -H "Content-Type: application/json" -X POST -d '{"requestId":"anything","requesterEmail":"your@email","domainName":"openpaas"}' '127.0.0.1:8080/api/deployments'
 ```
 You will receive instance's address and account for admin, you have to note this account for login to instance.
 

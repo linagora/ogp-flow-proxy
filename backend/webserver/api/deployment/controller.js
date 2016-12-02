@@ -3,27 +3,32 @@
 const nginx = require('../../../core/nginx');
 const swarm = require('../../../core/swarm');
 const request = require('request');
+const helper = require('./helper');
 
 const SERVICE_DEFAULT_PORT = 80;
 
 function create(req, res) {
-  if (!req.query.domain || !req.query.email) {
-    return res.status(400).json({code: 400, message: 'Bad request', details: 'Missing domain or email'});
-  }
 
-  swarm.create(req.query.domain, req.query.email, (err, app, admin) => {
+  const requestId = req.body.requestId;
+  const domainName = req.body.domainName;
+  const requesterEmail = req.body.requesterEmail;
+
+  swarm.create(domainName, requesterEmail, (err, app, admin) => {
     if (err) {
-      return res.status(500).json({code: 500, message: 'Server error', details: err.message});
+      console.log('Error while creating Swarm services', err);
+
+      const jsonRes = helper.errorResponse(requestId, 'Server Error', 'Cannot create Swarm services');
+
+      return res.status(500).json(jsonRes);
     }
 
     _monitoring(app);
 
-    res.send('Deploying your Openpaas instance, please wait. It maybe take few minutes \n'
-              + `Your application's address is http://${app.appName} \n`
-              + 'Your account: \n'
-              + `Email: ${admin.email} \n`
-              + `Password: ${admin.password} `
-            );
+    const instanceHome = app.appName;
+    const password = admin.password;
+
+    const jsonRes = helper.successResponse(requestId, instanceHome, requesterEmail, password);
+    return res.status(202).json(jsonRes);
   });
 }
 
