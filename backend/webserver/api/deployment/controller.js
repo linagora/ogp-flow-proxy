@@ -1,5 +1,6 @@
 const nginx = require('../../../core/nginx');
 const swarm = require('../../../core/swarm');
+const deploymentModule = require('../../../core/deployment');
 const request = require('request');
 const helper = require('./helper');
 
@@ -17,13 +18,38 @@ function create(req, res) {
       return res.status(500).json(jsonRes);
     }
 
-    _monitoring(app);
+    deploymentModule.create({
+      requestId,
+      domainName,
+      requesterEmail,
+      publicUrl: app.appName,
+      internalUrl: `${app.upstream}:8080`
+    })
+    .then(deployment => {
+      _monitoring(app);
 
-    const instanceHome = app.appName;
-    const password = admin.password;
+      const data = {
+        deploymentId: deployment.id,
+        publicUrl: app.appName,
+        publicIp: 'http://server-ip',
+        administrator: {
+          login: admin.email,
+          password: admin.password
+        },
+        links: {
+          deploymentStatus: `http://server-ip/api/deployments/${deployment.id}/status`
+        }
+      };
 
-    const jsonRes = helper.successResponse(requestId, instanceHome, requesterEmail, password);
-    return res.status(202).json(jsonRes);
+      const jsonRes = helper.successResponse(requestId, data);
+      return res.status(202).json(jsonRes);
+    }, err => {
+      console.log('Error while creating deployment', err);
+
+      const jsonRes = helper.errorResponse(requestId, 'Server Error', 'Cannot create deployment');
+
+      return res.status(500).json(jsonRes);
+    });
   });
 }
 
@@ -79,7 +105,42 @@ function _monitoring(app) {
   }, 10000);
 }
 
+function getDeploymentStatus(req, res) {
+  const deploymentId = req.params.deploymentId;
+
+  deploymentModule.findById(deploymentId).then((deployment) => {
+    if (!deployment) {
+      return res.status(404).json({
+        status: 'not found'
+      });
+    }
+
+    request(`http://${deployment.internalUrl}/api/monitoring`, (err, response) => {
+      if (!err && response.statusCode === 200) {
+        return res.status(404).json({
+          status: 'up'
+        });
+      }
+
+      return res.status(404).json({
+        status: 'down'
+      });
+    });
+  }, err => {
+    console.log('Error while finding deployment', deploymentId, err);
+
+    return res.status(500).json({
+      error: {
+        code: 500,
+        message: 'Server Error',
+        details: 'Error while finding deployment'
+      }
+    });
+  });
+}
+
 module.exports = {
   create,
-  remove
+  remove,
+  getDeploymentStatus,
 };

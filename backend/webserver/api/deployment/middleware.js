@@ -1,6 +1,7 @@
 const helper = require('./helper');
 const deploymentModule = require('../../../core/deployment');
 const emailAddresses = require('email-addresses');
+const mongoose = require('mongoose');
 
 function validateEmail(email) {
   return emailAddresses.parseOneAddress(email) !== null;
@@ -44,7 +45,26 @@ function hasValidRequestData(req, res, next) {
   });
 }
 
+function requireObjectId(paramName) {
+  return function(req, res, next) {
+    const value = req.params[paramName];
+
+    if (mongoose.Types.ObjectId.isValid(value)) {
+      return next();
+    }
+
+    return res.status(400).json({
+      error: {
+        code: 400,
+        message: 'Bad Request',
+        details: `${paramName} is not valid ObjectId`
+      }
+    });
+  };
+}
+
 module.exports = {
   canCreate,
   hasValidRequestData,
+  requireObjectId,
 };

@@ -8,4 +8,6 @@ router.post('/', middleware.canCreate, middleware.hasValidRequestData, controlle
 
 router.post('/remove', controller.remove);
 
+router.get('/:deploymentId/status', middleware.requireObjectId('deploymentId'), controller.getDeploymentStatus);
+
 module.exports = router;

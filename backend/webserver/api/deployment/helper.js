@@ -1,12 +1,10 @@
 const constant = require('./constant');
 
-function successResponse(requestId, instanceHome, administrator, password) {
+function successResponse(requestId, data) {
   return {
     requestId,
     status: constant.STATUS.success,
-    instanceHome,
-    administrator,
-    password
+    data
   };
 }
 
