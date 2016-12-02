@@ -10,7 +10,7 @@ function create(opts, callback) {
   const config = ''
         + 'server {\n'
         +   'listen 80; \n'
-        +   `server_name ${opts.name}.${opts.domain}; \n`
+        +   `server_name ${opts.name}; \n`
         +   'location / { \n'
         +     'proxy_http_version 1.1; \n'
         +     'proxy_set_header Upgrade $http_upgrade; \n'
@@ -21,10 +21,10 @@ function create(opts, callback) {
         +     'proxy_set_header X-NginX-Proxy true; \n'
         +     'proxy_redirect off; \n'
         +     'proxy_buffering off; \n'
-        +     `proxy_pass http://${opts.name}:${opts.port}; \n`
+        +     `proxy_pass http://${opts.upstream}:${opts.port}; \n`
         +   '} \n'
         + '}';
-  const confPath = path.join(configDir, opts.name + '.conf');
+  const confPath = path.join(configDir, opts.upstream + '.conf');
 
   fs.access(confPath, fs.constants.F_OK, (err) => {
     if (err) {

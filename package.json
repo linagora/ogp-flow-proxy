@@ -3,12 +3,12 @@
   "description": "Flow proxy",
   "version": "0.0.1",
   "dependencies": {
-    "cron": "1.1.0",
     "docker-modem": "0.3.x",
     "express": "4.14.0",
     "lodash": "4.15.0",
     "morgan": "1.7.0",
     "q": "1.4.1",
-    "request": "2.79.0"
+    "request": "2.79.0",
+    "password-generator": "2.0.2"
   }
 }
