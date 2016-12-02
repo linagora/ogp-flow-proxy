@@ -5,20 +5,35 @@ const dockerModem = require('docker-modem');
 const _ = require('lodash');
 const q = require('q');
 const TEMPLATE = require('../../templates/stack-openpass.json');
+const generatePassword = require('password-generator');
 
 const modem = new dockerModem();
 
-function _createTemplate(requestId) {
+function _generatePassword() {
+ return generatePassword(12, false);
+}
+
+function _createTemplate(domainName, requestEmail) {
   const templateObject = _.cloneDeep(TEMPLATE);
 
-  templateObject.Main = `${requestId}_${templateObject.Main}`;
+  const appName = `${domainName}.beta.data.gouv.fr`;
+  const adminPassword = _generatePassword();
+
+  templateObject.Main = domainName + '_' + templateObject.Main;
+  templateObject.Inputs = {
+    ESN_ADMIN_EMAIL: requestEmail,
+    ESN_ADMIN_PASSWORD: adminPassword,
+    ESN_DOMAIN: domainName,
+    ESN_COMPANY: domainName
+  };
 
   _.forEach(templateObject.Rules, (value, key) => {
-    const serviceName = `${requestId}_${key}`;
+    const serviceName = `${domainName}_${key}`;
 
     if (key !== 'Services') {
-      value.Vars.host = serviceName;
-      templateObject.Services[key].name = serviceName;
+       value.Vars.host = serviceName;
+
+       templateObject.Services[key].name = value.Vars.host;
     }
 
     if (value.Networks) {
@@ -33,17 +48,28 @@ function _createTemplate(requestId) {
   _.forEach(templateObject.Rules, (value, key) => {
     if (key !== 'Services' && value.Env) {
       _.forEach(value.Env, (envValue, envKey) => {
-        const res = eval(`module.exports = function () { const Rules = templateObject.Rules; return ${envValue}; }`);
+        const res = eval(`module.exports = function () { const Rules = templateObject.Rules; const Inputs = templateObject.Inputs; return ${envValue}; }`);
         templateObject.Services[key].TaskTemplate.ContainerSpec.Env.push(`${envKey}=${res()}`);
       });
     }
   });
 
-  return templateObject;
+  return {
+    template: templateObject,
+    app: {
+      appName: appName,
+      upstream: templateObject.Main
+    },
+    admin: {
+      email: requestEmail,
+      password: adminPassword
+    }
+  };
 }
 
-function create(requestId, callback) {
-  const template = _createTemplate(requestId);
+function create(domainName, requestEmail, callback) {
+  const instanceInfo = _createTemplate(domainName, requestEmail);
+  const template = instanceInfo.template;
   const services = template.Rules.Services;
 
   const promises = services.map(service => {
@@ -73,7 +99,7 @@ function create(requestId, callback) {
   });
 
   q.all(promises).then(function() {
-    callback(null, template.Main);
+    callback(null, instanceInfo.app, instanceInfo.admin);
   }, function(err) {
     callback(err);
   });
