@@ -8,17 +8,22 @@ const TEMPLATE = require('../../templates/stack-openpass.json');
 
 const modem = new dockerModem();
 
-function _createTemplate(requestId) {
+function _createTemplate(domainName) {
   const templateObject = _.cloneDeep(TEMPLATE);
 
-  templateObject.Main = `${requestId}_${templateObject.Main}`;
+  const appName = `${domainName}.beta.data.gouv.fr`;
 
   _.forEach(templateObject.Rules, (value, key) => {
-    const serviceName = `${requestId}_${key}`;
+    const serviceName = `${domainName}_${key}`;
 
     if (key !== 'Services') {
-      value.Vars.host = serviceName;
-      templateObject.Services[key].name = serviceName;
+      if (key === templateObject.Main) {
+        value.Vars.host = appName
+      } else {
+        value.Vars.host = serviceName;
+      }
+
+       templateObject.Services[key].name = value.Vars.host;
     }
 
     if (value.Networks) {
@@ -42,8 +47,8 @@ function _createTemplate(requestId) {
   return templateObject;
 }
 
-function create(requestId, callback) {
-  const template = _createTemplate(requestId);
+function create(domainName, callback) {
+  const template = _createTemplate(domainName);
   const services = template.Rules.Services;
 
   const promises = services.map(service => {
