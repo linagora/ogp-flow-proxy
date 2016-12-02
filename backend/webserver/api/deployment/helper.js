@@ -14,12 +14,12 @@ function errorResponse(requestId, error, reason) {
   return {
     requestId,
     status: constant.STATUS.error,
-    error: error,
-    reason: reason
-  }
+    error,
+    reason
+  };
 }
 
 module.exports = {
   successResponse,
   errorResponse,
-}
+};

@@ -1,4 +1,3 @@
-const constant = require('./constant');
 const helper = require('./helper');
 const deploymentModule = require('../../../core/deployment');
 const emailAddresses = require('email-addresses');

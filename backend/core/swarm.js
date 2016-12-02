@@ -1,6 +1,3 @@
-'use strict';
-
-const fs = require('fs');
 const dockerModem = require('docker-modem');
 const _ = require('lodash');
 const q = require('q');
@@ -37,12 +34,12 @@ function _createTemplate(domainName, requestEmail) {
     }
 
     if (value.Networks) {
-      value.Networks.map(net => {
+      value.Networks.forEach(net => {
         const network = process.env[net];
 
-        templateObject.Services[key].Networks.push({Target: network});
+        templateObject.Services[key].Networks.push({ Target: network });
       });
-    };
+    }
   });
 
   _.forEach(templateObject.Rules, (value, key) => {
@@ -57,7 +54,7 @@ function _createTemplate(domainName, requestEmail) {
   return {
     template: templateObject,
     app: {
-      appName: appName,
+      appName,
       upstream: templateObject.Main
     },
     admin: {
@@ -87,7 +84,7 @@ function create(domainName, requestEmail, callback) {
       }
     };
 
-    modem.dial(optsf, (err, data) => {
+    modem.dial(optsf, (err) => {
       if (err) {
         defered.reject(err);
       } else {
@@ -98,9 +95,9 @@ function create(domainName, requestEmail, callback) {
     return defered.promise;
   });
 
-  q.all(promises).then(function() {
+  q.all(promises).then(() => {
     callback(null, instanceInfo.app, instanceInfo.admin);
-  }, function(err) {
+  }, (err) => {
     callback(err);
   });
 }
@@ -122,7 +119,7 @@ function remove(domainName, callback) {
       }
     };
 
-    modem.dial(optsf, (err, data) => {
+    modem.dial(optsf, (err) => {
       if (err) {
         defered.reject();
       } else {
@@ -133,11 +130,7 @@ function remove(domainName, callback) {
     return defered.promise;
   });
 
-  q.all(promises).then(function() {
-    callback();
-  }, function(err) {
-    callback(err);
-  });
+  q.all(promises).then(() => callback(), err => callback(err));
 }
 
 module.exports = {

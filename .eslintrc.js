@@ -1,0 +1,25 @@
+module.exports = {
+  installedESLint: true,
+  extends: 'airbnb-base',
+  rules: {
+    'import/no-extraneous-dependencies': 0,
+    'import/no-dynamic-require': 0,
+    'arrow-body-style': 0,
+    'comma-dangle': 0,
+    'no-console': 0,
+    indent: 0,
+    'space-before-function-paren': [2, 'never'],
+    'func-names': 0,
+    'consistent-return': 0,
+    'no-use-before-define': [2, { functions: false, classes: true }],
+    'no-param-reassign': 0,
+    'no-shadow': 0,
+    'no-underscore-dangle': 0,
+    'global-require': 0,
+    'no-multi-spaces': 1,
+    'prefer-template': 1,
+    'arrow-parens': 0,
+    'new-cap': 0,
+    'no-eval': 1,
+  }
+};

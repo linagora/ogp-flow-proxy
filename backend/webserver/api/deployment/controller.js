@@ -1,14 +1,9 @@
-'use strict';
-
 const nginx = require('../../../core/nginx');
 const swarm = require('../../../core/swarm');
 const request = require('request');
 const helper = require('./helper');
 
-const SERVICE_DEFAULT_PORT = 80;
-
 function create(req, res) {
-
   const requestId = req.body.requestId;
   const domainName = req.body.domainName;
   const requesterEmail = req.body.requesterEmail;
@@ -34,17 +29,17 @@ function create(req, res) {
 
 function remove(req, res) {
   if (!req.query.domain) {
-    return res.status(400).json({code: 400, message: 'Bad request', details: 'Missing domain'});
+    return res.status(400).json({ code: 400, message: 'Bad request', details: 'Missing domain' });
   }
 
   nginx.remove(req.query.domain, (err) => {
     if (err) {
-      return res.status(500).json({code: 500, message: 'Server error', details: err.message});
+      return res.status(500).json({ code: 500, message: 'Server error', details: err.message });
     }
 
     swarm.remove(req.query.domain, (err) => {
       if (err) {
-        return res.status(500).json({code: 500, message: 'Server error', details: err.message});
+        return res.status(500).json({ code: 500, message: 'Server error', details: err.message });
       }
 
       res.send('Removing Openpaas instance successfully');
@@ -55,11 +50,11 @@ function remove(req, res) {
 function _monitoring(app) {
   const TIME_OUT = 60; // 10 minutes
   let counter = 0;
-  const interval = setInterval(function() {
-    counter++;
+  const interval = setInterval(() => {
+    counter += 1;
 
-    request(`http://${app.upstream}:8080/api/monitoring`, function(err, response, body) {
-      if (!err && response.statusCode == 200) {
+    request(`http://${app.upstream}:8080/api/monitoring`, (err, response) => {
+      if (!err && response.statusCode === 200) {
         const opts = {
           name: app.appName,
           upstream: app.upstream,
