@@ -54,12 +54,12 @@ function _monitoring(app) {
         const opts = {
           name: app.appName,
           upstream: app.upstream,
-          port: service.port || 8080
+          port: app.port || 8080
         };
 
         nginx.create(opts, (err) => {
           if (err) {
-            console.log('Can not reload nginx');
+            return console.log('Can not reload nginx');
           }
 
           console.log('Deploying application is successfully');
