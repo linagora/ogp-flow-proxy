@@ -3,8 +3,10 @@
 const exec = require('child_process').exec;
 const fs = require('fs');
 const path = require('path');
+const _ = require('lodash');
 
 const configDir = '/etc/nginx/conf.d/';
+const TEMPLATE = require('../../templates/stack-openpass.json');
 
 function create(opts, callback) {
   const config = ''
@@ -51,17 +53,18 @@ function create(opts, callback) {
   });
 }
 
-function remove(name, callback) {
-  const confPath = path.join(configDir, name + '.conf');
+function remove(domain, callback) {
+  const upstream = domain + '_' + _.cloneDeep(TEMPLATE).Main;
+  const confPath = path.join(configDir, upstream + '.conf');
 
   fs.access(confPath, fs.constants.F_OK, (err) => {
     if (err) {
-      return callback();
+      return callback(new Error('Application is not exist in revert proxy'));
     }
 
     fs.unlink(confPath, (err) => {
       if (err) {
-        return callback();
+        return callback(new Error('Can not remove application\'s configuration file from revert proxy'));
       }
 
       _reload(callback);

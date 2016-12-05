@@ -28,17 +28,21 @@ function create(req, res) {
 }
 
 function remove(req, res) {
-  nginx.remove(req.query.serviceName, (err) => {
+  if (!req.query.domain) {
+    return res.status(400).json({code: 400, message: 'Bad request', details: 'Missing domain'});
+  }
+
+  nginx.remove(req.query.domain, (err) => {
     if (err) {
       return res.status(500).json({code: 500, message: 'Server error', details: err.message});
     }
 
-    swarm.remove(req.query.serviceName, (err) => {
+    swarm.remove(req.query.domain, (err) => {
       if (err) {
         return res.status(500).json({code: 500, message: 'Server error', details: err.message});
       }
 
-      res.status(200);
+      res.send('Removing Openpaas instance successfully');
     });
   });
 }
