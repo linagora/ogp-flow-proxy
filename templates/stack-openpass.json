@@ -182,7 +182,7 @@
             "ELASTICSEARCH_INIT_TIMEOUT=120",
             "MONGO_DBNAME=esn"
           ],
-          "Image" : "tuanict93/esn"
+          "Image" : "linagora/esn-ogp"
         },
         "LogDriver" : {
           "Name" : "json-file",
