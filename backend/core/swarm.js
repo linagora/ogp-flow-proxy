@@ -105,18 +105,39 @@ function create(domainName, requestEmail, callback) {
   });
 }
 
-function remove(serviceName, callback) {
-  const optsf = {
-    path: `/services/${serviceName}`,
-    method: 'DELETE',
-    statusCodes: {
-      200: true,
-      404: 'no such service',
-      500: 'server error'
-    }
-  };
+function remove(domainName, callback) {
+  const templateObject = _.cloneDeep(TEMPLATE);
+  const services = Object.keys(templateObject.Services);
 
-  modem.dial(optsf, callback);
+  const promises = _.forEach(services, (service) => {
+    const defered = q.defer();
+
+    const optsf = {
+      path: `/services/${domainName}_${service}`,
+      method: 'DELETE',
+      statusCodes: {
+        200: true,
+        404: 'no such service',
+        500: 'server error'
+      }
+    };
+
+    modem.dial(optsf, (err, data) => {
+      if (err) {
+        defered.reject();
+      } else {
+        defered.resolve();
+      }
+    });
+
+    return defered.promise;
+  });
+
+  q.all(promises).then(function() {
+    callback();
+  }, function(err) {
+    callback(err);
+  });
 }
 
 module.exports = {
