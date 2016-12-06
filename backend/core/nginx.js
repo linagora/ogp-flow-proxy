@@ -12,6 +12,9 @@ function create(opts, callback) {
   const config = ''
         + 'server {\n'
         +   'listen 80; \n'
+        +   'listen 443 ssl; \n'
+        +   'ssl_certificate /etc/nginx/conf.d/nginx.crt; \n'
+        +   'ssl_certificate_key /etc/nginx/conf.d/nginx.key; \n'
         +   `server_name ${opts.name}; \n`
         +   'location / { \n'
         +     'proxy_http_version 1.1; \n'

@@ -39,6 +39,7 @@ node1$ docker service create \
 		--network proxy \
 		--mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
 		--publish 80:80 \
+    --publish 443:443 \
 		--publish 8080:8080 \
 		--env NET_PROXY=proxy \
 		--env NET_APP=appnet \
