@@ -60,3 +60,9 @@ Take a coffee and enjoy the new instance created:
 ```
 curl --header 'Host: http://linagora.beta.data.gouv.fr' http://127.0.0.1
 ```
+
+Remove instance by send a POST request:
+
+```
+curl -XPOST '127.0.0.1:8080/api/deployments/remove?domain=linagora'
+```
