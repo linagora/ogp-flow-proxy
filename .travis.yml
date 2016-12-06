@@ -1,0 +1,16 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - export BUILD_ID=${TRAVIS_COMMIT::8}
+  - export ESN_REPO=linagora/ogp-flow-proxy
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_TAG ; fi`
+  - docker build -t $ESN_REPO:$BUILD_ID .
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker tag $ESN_REPO:$BUILD_ID $ESN_REPO:$TAG
+  - docker push $ESN_REPO:$TAG
+
+script:
+  - docker images
