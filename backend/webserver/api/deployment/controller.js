@@ -1,45 +1,71 @@
-'use strict';
-
 const nginx = require('../../../core/nginx');
 const swarm = require('../../../core/swarm');
+const deploymentModule = require('../../../core/deployment');
 const request = require('request');
-
-const SERVICE_DEFAULT_PORT = 80;
+const helper = require('./helper');
 
 function create(req, res) {
-  if (!req.query.domain || !req.query.email) {
-    return res.status(400).json({code: 400, message: 'Bad request', details: 'Missing domain or email'});
-  }
+  const requestId = req.body.requestId;
+  const domainName = req.body.domainName;
+  const requesterEmail = req.body.requesterEmail;
 
-  swarm.create(req.query.domain, req.query.email, (err, app, admin) => {
+  swarm.create(domainName, requesterEmail, (err, app, admin) => {
     if (err) {
-      return res.status(500).json({code: 500, message: 'Server error', details: err.message});
+      console.log('Error while creating Swarm services', err);
+
+      const jsonRes = helper.errorResponse(requestId, 'Server Error', 'Cannot create Swarm services');
+
+      return res.status(500).json(jsonRes);
     }
 
-    _monitoring(app);
+    deploymentModule.create({
+      requestId,
+      domainName,
+      requesterEmail,
+      publicUrl: app.appName,
+      internalUrl: `${app.upstream}:8080`
+    })
+    .then(deployment => {
+      _monitoring(app);
 
-    res.send('Deploying your Openpaas instance, please wait. It maybe take few minutes \n'
-              + `Your application's address is http://${app.appName} \n`
-              + 'Your account: \n'
-              + `Email: ${admin.email} \n`
-              + `Password: ${admin.password} `
-            );
+      const data = {
+        deploymentId: deployment.id,
+        publicUrl: app.appName,
+        publicIp: 'http://server-ip',
+        administrator: {
+          login: admin.email,
+          password: admin.password
+        },
+        links: {
+          deploymentStatus: `http://server-ip/api/deployments/${deployment.id}/status`
+        }
+      };
+
+      const jsonRes = helper.successResponse(requestId, data);
+      return res.status(202).json(jsonRes);
+    }, err => {
+      console.log('Error while creating deployment', err);
+
+      const jsonRes = helper.errorResponse(requestId, 'Server Error', 'Cannot create deployment');
+
+      return res.status(500).json(jsonRes);
+    });
   });
 }
 
 function remove(req, res) {
   if (!req.query.domain) {
-    return res.status(400).json({code: 400, message: 'Bad request', details: 'Missing domain'});
+    return res.status(400).json({ code: 400, message: 'Bad request', details: 'Missing domain' });
   }
 
   nginx.remove(req.query.domain, (err) => {
     if (err) {
-      return res.status(500).json({code: 500, message: 'Server error', details: err.message});
+      return res.status(500).json({ code: 500, message: 'Server error', details: err.message });
     }
 
     swarm.remove(req.query.domain, (err) => {
       if (err) {
-        return res.status(500).json({code: 500, message: 'Server error', details: err.message});
+        return res.status(500).json({ code: 500, message: 'Server error', details: err.message });
       }
 
       res.send('Removing Openpaas instance successfully');
@@ -50,11 +76,11 @@ function remove(req, res) {
 function _monitoring(app) {
   const TIME_OUT = 60; // 10 minutes
   let counter = 0;
-  const interval = setInterval(function() {
-    counter++;
+  const interval = setInterval(() => {
+    counter += 1;
 
-    request(`http://${app.upstream}:8080/api/monitoring`, function(err, response, body) {
-      if (!err && response.statusCode == 200) {
+    request(`http://${app.upstream}:8080/api/monitoring`, (err, response) => {
+      if (!err && response.statusCode === 200) {
         const opts = {
           name: app.appName,
           upstream: app.upstream,
@@ -79,7 +105,42 @@ function _monitoring(app) {
   }, 10000);
 }
 
+function getDeploymentStatus(req, res) {
+  const deploymentId = req.params.deploymentId;
+
+  deploymentModule.findById(deploymentId).then((deployment) => {
+    if (!deployment) {
+      return res.status(404).json({
+        status: 'not found'
+      });
+    }
+
+    request(`http://${deployment.internalUrl}/api/monitoring`, (err, response) => {
+      if (!err && response.statusCode === 200) {
+        return res.status(404).json({
+          status: 'up'
+        });
+      }
+
+      return res.status(404).json({
+        status: 'down'
+      });
+    });
+  }, err => {
+    console.log('Error while finding deployment', deploymentId, err);
+
+    return res.status(500).json({
+      error: {
+        code: 500,
+        message: 'Server Error',
+        details: 'Error while finding deployment'
+      }
+    });
+  });
+}
+
 module.exports = {
   create,
-  remove
+  remove,
+  getDeploymentStatus,
 };

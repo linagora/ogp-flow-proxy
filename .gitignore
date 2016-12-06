@@ -1,2 +1,4 @@
 node_modules/
 *.log
+backend/config/config.dev.js
+backend/config/config.production.js

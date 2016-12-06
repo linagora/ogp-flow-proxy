@@ -1,5 +1,3 @@
-'use strict';
-
 const exec = require('child_process').exec;
 const fs = require('fs');
 const path = require('path');
@@ -35,10 +33,10 @@ function create(opts, callback) {
     if (err) {
       fs.writeFile(confPath, config, (err) => {
         if (err) {
-          return callback(err)
+          return callback(err);
         }
 
-        _check(function(checkErr) {
+        _check(checkErr => {
           if (checkErr) {
             fs.unlink(confPath, (err) => {
               if (err) {
@@ -86,4 +84,4 @@ function _check(callback) {
 module.exports = {
   create,
   remove
-}
+};
