@@ -1,10 +1,27 @@
-FROM nginx:1.11.5
+FROM debian:jessie
 MAINTAINER "OpenPass Team" 
 
-RUN groupadd -r node && useradd -r -g node node \
-  && sed -i 's/user  nginx/user root/g' /etc/nginx/nginx.conf
+ENV NPM_CONFIG_LOGLEVEL info
+ENV NODE_VERSION 6.5.0
+ENV NGINX_VERSION 1.11.6-1~jessie
 
-# gpg keys listed at https://github.com/nodejs/node
+# Install nginx
+RUN apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62 \
+	&& echo "deb http://nginx.org/packages/mainline/debian/ jessie nginx" >> /etc/apt/sources.list \
+	&& apt-get update \
+	&& apt-get install --no-install-recommends --no-install-suggests -y \
+						ca-certificates \
+						nginx=${NGINX_VERSION} \
+						nginx-module-xslt \
+						nginx-module-geoip \
+						nginx-module-image-filter \
+						nginx-module-perl \
+						nginx-module-njs \
+						gettext-base \
+	&& sed -i 's/user  nginx/user root/g' /etc/nginx/nginx.conf 
+
+# Install nodejs
+## gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
   && for key in \
     9554F04D7259F04124DE6B476D5A82AC7E37093B \
@@ -18,10 +35,8 @@ RUN set -ex \
   ; do \
     gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
   done
-ENV NPM_CONFIG_LOGLEVEL info
-ENV NODE_VERSION 6.5.0
 RUN apt-get update \
-  && apt-get install curl -y \
+  && apt-get install curl openssl -y \
   && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
   && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
   && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
@@ -32,11 +47,8 @@ RUN apt-get update \
   && apt-get clean && rm -rf /var/lib/apt/*
 
 WORKDIR /usr/src/app
-COPY ./ /usr/src/app
 COPY ./templates/nginx/index.html /usr/share/nginx/html/index.html
-
-RUN   /bin/bash -c "rm /var/log/nginx/{access,error}.log &&  touch /var/log/nginx/{access,error}.log"
+COPY ./ /usr/src/app
 VOLUME /etc/nginx/conf.d
-EXPOSE 8080
-EXPOSE 80
+EXPOSE 8080 80 443
 CMD [ "./entrypoint.sh" ]
