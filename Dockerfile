@@ -33,6 +33,8 @@ RUN apt-get update \
 
 WORKDIR /usr/src/app
 COPY ./ /usr/src/app
+COPY ./templates/nginx/index.html /usr/share/nginx/html/index.html
+
 RUN   /bin/bash -c "rm /var/log/nginx/{access,error}.log &&  touch /var/log/nginx/{access,error}.log"
 VOLUME /etc/nginx/conf.d
 EXPOSE 8080
