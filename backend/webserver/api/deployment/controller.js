@@ -19,7 +19,7 @@ function create(req, res) {
     }
 
     deploymentModule.create({
-      requestId,
+      _id: requestId,
       domainName,
       requesterEmail,
       publicUrl: app.appName,
@@ -29,7 +29,6 @@ function create(req, res) {
       _monitoring(app);
 
       const data = {
-        deploymentId: deployment.id,
         publicUrl: app.appName,
         publicIp: 'http://server-ip',
         administrator: {
@@ -37,7 +36,7 @@ function create(req, res) {
           password: admin.password
         },
         links: {
-          deploymentStatus: `http://server-ip/api/deployments/${deployment.id}/status`
+          deploymentStatus: `http://server-ip/api/deployments/${deployment._id}/status`
         }
       };
 
@@ -106,9 +105,9 @@ function _monitoring(app) {
 }
 
 function getDeploymentStatus(req, res) {
-  const deploymentId = req.params.deploymentId;
+  const requestId = req.params.requestId;
 
-  deploymentModule.findById(deploymentId).then((deployment) => {
+  deploymentModule.findById(requestId).then((deployment) => {
     if (!deployment) {
       return res.status(404).json({
         status: 'not found'
@@ -127,7 +126,7 @@ function getDeploymentStatus(req, res) {
       });
     });
   }, err => {
-    console.log('Error while finding deployment', deploymentId, err);
+    console.log('Error while finding deployment', requestId, err);
 
     return res.status(500).json({
       error: {
