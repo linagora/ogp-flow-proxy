@@ -46,6 +46,7 @@ Now start flow-proxy:
 node1$ docker service create \
     --name flow-proxy \
     --network proxy \
+    --constraint 'node.role==manager' \
     --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
     --publish 80:80 \
     --publish 443:443 \
