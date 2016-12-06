@@ -1,5 +1,7 @@
 # Flow-proxy
 
+[![Build Status](https://travis-ci.org/linagora/ogp-flow-proxy.svg?branch=master)](https://travis-ci.org/linagora/ogp-flow-proxy)
+
 ## How to build and run
 
 ### Create 2 VM  
