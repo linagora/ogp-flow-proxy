@@ -39,6 +39,7 @@ node1$ docker service create \
 		--network proxy \
 		--mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
 		--publish 80:80 \
+    --publish 443:443 \
 		--publish 8080:8080 \
 		--env NET_PROXY=proxy \
 		--env NET_APP=appnet \
@@ -58,4 +59,10 @@ Take a coffee and enjoy the new instance created:
 
 ```
 curl --header 'Host: http://linagora.beta.data.gouv.fr' http://127.0.0.1
+```
+
+Remove instance by send a POST request:
+
+```
+curl -XPOST '127.0.0.1:8080/api/deployments/remove?domain=linagora'
 ```
