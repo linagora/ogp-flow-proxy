@@ -31,7 +31,7 @@ node1$ docker network  create --driver overlay appnet
 - Build Flow-proxy and run
 
 ```
-node1$ docker build -t flow-proxy .
+node1$ docker build -t linagora/ogp-flow-proxy .
 ```
 
 Create MongoDB service for flow-proxy:
@@ -39,6 +39,8 @@ Create MongoDB service for flow-proxy:
 ```
 node1$ docker service create --name flow-mongo --network proxy mongo:2.6.5
 ```
+
+Now start flow-proxy:
 
 ```
 node1$ docker service create \
@@ -51,7 +53,7 @@ node1$ docker service create \
     --env NET_PROXY=proxy \
     --env NET_APP=appnet \
     --env MONGO_HOST=flow-mongo \
-    flow-proxy
+    linagora/ogp-flow-proxy
 ```
 
 ## How to test
@@ -80,11 +82,11 @@ curl -XPOST '127.0.0.1:8080/api/deployments/remove?domain=linagora'
 Rebuild the flow-proxy image:
 
 ```
-node1$ docker build -t flow-proxy .
+node1$ docker build -t linagora/ogp-flow-proxy .
 ```
 
 Tell Docker Swarm to update the flow-proxy service with the name image:
 
 ```
-node1$ docker service update --image flow-proxy:latest flow-proxy
+node1$ docker service update --image linagora/ogp-flow-proxy:latest flow-proxy
 ```
