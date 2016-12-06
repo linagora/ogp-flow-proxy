@@ -6,7 +6,7 @@ function validateEmail(email) {
 }
 
 const deploymentSchema = mongoose.Schema({
-  requestId: { type: String, trim: true, required: true },
+  _id: { type: String, trim: true },
   requesterEmail: { type: String, trim: true, validate: validateEmail },
   domainName: { type: String, unique: true, trim: true, required: true },
   publicUrl: { type: String, trim: true, required: true },
