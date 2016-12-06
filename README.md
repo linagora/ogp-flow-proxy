@@ -74,3 +74,17 @@ Remove instance by send a POST request:
 ```
 curl -XPOST '127.0.0.1:8080/api/deployments/remove?domain=linagora'
 ```
+
+## To update flow-proxy
+
+Rebuild the flow-proxy image:
+
+```
+node1$ docker build -t flow-proxy .
+```
+
+Tell Docker Swarm to update the flow-proxy service with the name image:
+
+```
+node1$ docker service upate --image flow-proxy:latest flow-proxy
+```
