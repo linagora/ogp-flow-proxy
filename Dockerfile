@@ -1,5 +1,5 @@
 FROM debian:jessie
-MAINTAINER "OpenPass Team" 
+MAINTAINER "OpenPass Team"
 
 ENV NPM_CONFIG_LOGLEVEL info
 ENV NODE_VERSION 6.5.0
@@ -7,18 +7,18 @@ ENV NGINX_VERSION 1.11.6-1~jessie
 
 # Install nginx
 RUN apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62 \
-	&& echo "deb http://nginx.org/packages/mainline/debian/ jessie nginx" >> /etc/apt/sources.list \
-	&& apt-get update \
-	&& apt-get install --no-install-recommends --no-install-suggests -y \
-						ca-certificates \
-						nginx=${NGINX_VERSION} \
-						nginx-module-xslt \
-						nginx-module-geoip \
-						nginx-module-image-filter \
-						nginx-module-perl \
-						nginx-module-njs \
-						gettext-base \
-	&& sed -i 's/user  nginx/user root/g' /etc/nginx/nginx.conf 
+  && echo "deb http://nginx.org/packages/mainline/debian/ jessie nginx" >> /etc/apt/sources.list \
+  && apt-get update \
+  && apt-get install --no-install-recommends --no-install-suggests -y \
+            ca-certificates \
+            nginx=${NGINX_VERSION} \
+            nginx-module-xslt \
+            nginx-module-geoip \
+            nginx-module-image-filter \
+            nginx-module-perl \
+            nginx-module-njs \
+            gettext-base \
+  && sed -i 's/user  nginx/user root/g' /etc/nginx/nginx.conf
 
 # Install nodejs
 ## gpg keys listed at https://github.com/nodejs/node
@@ -46,9 +46,12 @@ RUN apt-get update \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
   && apt-get clean && rm -rf /var/lib/apt/*
 
+ADD . /usr/src/app
 WORKDIR /usr/src/app
-COPY ./templates/nginx/index.html /usr/share/nginx/html/index.html
-COPY ./ /usr/src/app
+COPY templates/nginx/index.html /usr/share/nginx/html/index.html
+RUN openssl req -subj "/C=FR/ST=Paris/L=Paris/O=Linagora Ltd/CN=*.beta.data.gouv.fr" -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/conf.d/nginx.key -out /etc/nginx/conf.d/nginx.crt
+
+RUN npm install --production
 VOLUME /etc/nginx/conf.d
 EXPOSE 8080 80 443
 CMD [ "./entrypoint.sh" ]
