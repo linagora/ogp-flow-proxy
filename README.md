@@ -86,5 +86,5 @@ node1$ docker build -t flow-proxy .
 Tell Docker Swarm to update the flow-proxy service with the name image:
 
 ```
-node1$ docker service upate --image flow-proxy:latest flow-proxy
+node1$ docker service update --image flow-proxy:latest flow-proxy
 ```
