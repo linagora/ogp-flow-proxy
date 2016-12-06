@@ -33,17 +33,25 @@ node1$ docker network  create --driver overlay appnet
 ```
 node1$ docker build -t flow-proxy .
 ```
+
+Create MongoDB service for flow-proxy:
+
+```
+node1$ docker service create --name flow-mongo --network proxy mongo:2.6.5
+```
+
 ```
 node1$ docker service create \
-	  --name flow-proxy \
-		--network proxy \
-		--mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
-		--publish 80:80 \
+    --name flow-proxy \
+    --network proxy \
+    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
+    --publish 80:80 \
     --publish 443:443 \
-		--publish 8080:8080 \
-		--env NET_PROXY=proxy \
-		--env NET_APP=appnet \
-		flow-proxy
+    --publish 8080:8080 \
+    --env NET_PROXY=proxy \
+    --env NET_APP=appnet \
+    --env MONGO_HOST=flow-mongo \
+    flow-proxy
 ```
 
 ## How to test
