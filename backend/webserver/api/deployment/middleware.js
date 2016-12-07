@@ -28,6 +28,13 @@ function hasValidRequestData(req, res, next) {
     return res.status(400).json(jsonRes);
   }
 
+  next();
+}
+
+function requireUniqueDomain(req, res, next) {
+  const domainName = req.body.domainName;
+  const requestId = req.body.requestId;
+
   deploymentModule.findByDomainName(domainName).then(deployment => {
     if (deployment) {
       const jsonRes = helper.errorResponse(requestId, 'Bad Request', 'domainName is existing');
@@ -43,7 +50,29 @@ function hasValidRequestData(req, res, next) {
     next(new Error(message));
   });
 }
+
+function requireUniqueRequestId(req, res, next) {
+  const requestId = req.body.requestId;
+
+  deploymentModule.findById(requestId).then(deployment => {
+    if (deployment) {
+      const jsonRes = helper.errorResponse(requestId, 'Bad Request', 'requestId is existing');
+
+      return res.status(400).json(jsonRes);
+    }
+
+    next();
+  }, err => {
+    const message = 'Error while finding deployment by requestId';
+
+    console.log(message, requestId, err);
+    next(new Error(message));
+  });
+}
+
 module.exports = {
   canCreate,
-  hasValidRequestData
+  hasValidRequestData,
+  requireUniqueRequestId,
+  requireUniqueDomain,
 };
