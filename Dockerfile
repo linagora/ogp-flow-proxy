@@ -1,5 +1,5 @@
 FROM debian:jessie
-MAINTAINER "OpenPass Team"
+MAINTAINER "OpenPaas Team"
 
 ENV NPM_CONFIG_LOGLEVEL info
 ENV NODE_VERSION 6.5.0
