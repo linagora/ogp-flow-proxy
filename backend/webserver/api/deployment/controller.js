@@ -145,7 +145,7 @@ function getDeploymentStatus(req, res) {
       });
     }
 
-    request(`http://${deployment.internalUrl}/api/monitoring`, (err, response) => {
+    request(`${deployment.internalUrl}/api/monitoring`, (err, response) => {
       if (!err && response.statusCode === 200) {
         return res.status(404).json({
           status: 'up'
