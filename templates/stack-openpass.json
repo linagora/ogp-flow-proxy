@@ -180,7 +180,8 @@
             "WEB_PORT=8080",
             "ELASTICSEARCH_PORT=9200",
             "ELASTICSEARCH_INIT_TIMEOUT=120",
-            "MONGO_DBNAME=esn"
+            "MONGO_DBNAME=esn",
+            "NODE_ENV=production"
           ],
           "Image" : "linagora/esn-ogp"
         },
