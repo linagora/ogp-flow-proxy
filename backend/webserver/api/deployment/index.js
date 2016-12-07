@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/', middleware.canCreate, middleware.hasValidRequestData, controller.create);
 
-router.post('/remove', controller.remove);
+router.delete('/:requestId', controller.remove);
 
 router.get('/:requestId/status', controller.getDeploymentStatus);
 

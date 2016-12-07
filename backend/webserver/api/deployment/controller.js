@@ -53,21 +53,51 @@ function create(req, res) {
 }
 
 function remove(req, res) {
-  if (!req.query.domain) {
-    return res.status(400).json({ code: 400, message: 'Bad request', details: 'Missing domain' });
-  }
+  const requestId = req.params.requestId;
 
-  nginx.remove(req.query.domain, (err) => {
-    if (err) {
-      return res.status(500).json({ code: 500, message: 'Server error', details: err.message });
+  deploymentModule.findById(requestId).then((deployment) => {
+    if (!deployment) {
+      return res.status(404).json({
+        status: 'not found'
+      });
     }
 
-    swarm.remove(req.query.domain, (err) => {
+    const domain = deployment.domainName;
+
+    nginx.remove(domain, err => {
       if (err) {
         return res.status(500).json({ code: 500, message: 'Server error', details: err.message });
       }
 
-      res.send('Removing Openpaas instance successfully');
+      swarm.remove(domain, err => {
+        if (err) {
+          return res.status(500).json({ code: 500, message: 'Server error', details: err.message });
+        }
+
+        deploymentModule.remove(requestId).then((deployment) => {
+          res.status(204).end();
+        }, err => {
+          console.log('Error while remove instance\'s metadata', requestId, err);
+
+          return res.status(500).json({
+            error: {
+              code: 500,
+              message: 'Server Error',
+              details: 'Error while remove instance\'s metadata
+            }
+          });
+        });
+      });
+    });
+  }, err => {
+    console.log('Error while finding deployment', requestId, err);
+
+    return res.status(500).json({
+      error: {
+        code: 500,
+        message: 'Server Error',
+        details: 'Error while finding deployment'
+      }
     });
   });
 }
