@@ -4,7 +4,7 @@ const middleware = require('./middleware');
 
 const router = express.Router();
 
-router.post('/', middleware.canCreate, middleware.hasValidRequestData, controller.create);
+router.post('/', middleware.canCreate, middleware.hasValidRequestData, middleware.requireUniqueRequestId, middleware.requireUniqueDomain, controller.create);
 
 router.delete('/:requestId', controller.remove);
 
