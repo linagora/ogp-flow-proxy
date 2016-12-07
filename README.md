@@ -56,6 +56,7 @@ node1$ docker service create \
     --env NET_PROXY=proxy \
     --env NET_APP=appnet \
     --env MONGO_HOST=flow-mongo \
+    --env SERVER_IP=<Public IP address of node1> \
     linagora/ogp-flow-proxy
 ```
 
