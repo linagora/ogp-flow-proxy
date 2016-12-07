@@ -14,8 +14,21 @@ function create(deployment) {
   return doc.save();
 }
 
+function list(limit=20, offset=0) {
+  return Deployment.find({})
+    .limit(Number(limit))
+    .skip(Number(offset));
+}
+
+function remove(id) {
+  return Deployment.findByIdAndRemove(id);
+}
+
 module.exports = {
   findById,
   findByDomainName,
   create,
+  list,
+  remove,
+  list
 };

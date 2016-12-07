@@ -77,7 +77,19 @@ curl --header 'Host: http://linagora.beta.data.gouv.fr' http://127.0.0.1
 Remove instance by send a POST request:
 
 ```
-curl -XPOST '127.0.0.1:8080/api/deployments/remove?domain=linagora'
+curl -XDELETE '127.0.0.1:8080/api/deployments/:requestId'
+```
+
+List all instances
+
+```
+curl -XGET '127.0.0.1:8080/api/deployments'
+```
+
+Get instance's detail by send a GET request:
+
+```
+curl -XGET '127.0.0.1:8080/api/deployments/:requestId'
 ```
 
 ## To update flow-proxy
