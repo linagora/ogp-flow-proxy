@@ -29,5 +29,6 @@ module.exports = {
   findByDomainName,
   create,
   list,
-  remove
+  remove,
+  list
 };

@@ -10,4 +10,8 @@ router.delete('/:requestId', controller.remove);
 
 router.get('/:requestId/status', controller.getDeploymentStatus);
 
+router.get('/', controller.listDeployments);
+
+router.get('/:requestId', controller.getDeployment);
+
 module.exports = router;

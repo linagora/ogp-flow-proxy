@@ -83,7 +83,7 @@ function remove(req, res) {
             error: {
               code: 500,
               message: 'Server Error',
-              details: 'Error while remove instance\'s metadata
+              details: 'Error while remove instance\'s metadata'
             }
           });
         });
@@ -168,8 +168,52 @@ function getDeploymentStatus(req, res) {
   });
 }
 
+function getDeployment(req, res) {
+  const requestId = req.params.requestId;
+
+  deploymentModule.findById(requestId).then((deployment) => {
+    if (!deployment) {
+      return res.status(404).json({
+        status: 'not found'
+      });
+    }
+
+    return res.status(200).json(deployment);
+  }, err => {
+    console.log('Error while finding deployment', requestId, err);
+
+    return res.status(500).json({
+      error: {
+        code: 500,
+        message: 'Server Error',
+        details: 'Error while finding deployment'
+      }
+    });
+  });
+}
+
+function listDeployments(req, res) {
+  const requestId = req.params.requestId;
+
+  deploymentModule.list(req.query.limit, req.query.offset).then((deployments) => {
+    return res.status(200).json(deployments);
+  }, err => {
+    console.log('Error while finding deployments', requestId, err);
+
+    return res.status(500).json({
+      error: {
+        code: 500,
+        message: 'Server Error',
+        details: 'Error while finding deployments'
+      }
+    });
+  });
+}
+
 module.exports = {
   create,
   remove,
   getDeploymentStatus,
+  getDeployment,
+  listDeployments
 };
