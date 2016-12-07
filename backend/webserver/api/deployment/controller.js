@@ -1,3 +1,4 @@
+const config = require('../../../config');
 const nginx = require('../../../core/nginx');
 const swarm = require('../../../core/swarm');
 const deploymentModule = require('../../../core/deployment');
@@ -22,21 +23,21 @@ function create(req, res) {
       _id: requestId,
       domainName,
       requesterEmail,
-      publicUrl: app.appName,
-      internalUrl: `${app.upstream}:8080`
+      publicUrl: `https://${app.appName}`,
+      internalUrl: `http://${app.upstream}:8080`
     })
     .then(deployment => {
       _monitoring(app);
 
       const data = {
-        publicUrl: app.appName,
-        publicIp: 'http://server-ip',
+        publicUrl: deployment.publicUrl,
+        publicIp: config.SERVER_IP,
         administrator: {
           login: admin.email,
           password: admin.password
         },
         links: {
-          deploymentStatus: `http://server-ip/api/deployments/${deployment._id}/status`
+          deploymentStatus: `http://${config.SERVER_IP}:8080/api/deployments/${deployment._id}/status`
         }
       };
 
@@ -74,7 +75,7 @@ function remove(req, res) {
           return res.status(500).json({ code: 500, message: 'Server error', details: err.message });
         }
 
-        deploymentModule.remove(requestId).then((deployment) => {
+        deploymentModule.remove(requestId).then(() => {
           res.status(204).end();
         }, err => {
           console.log('Error while remove instance\'s metadata', requestId, err);
