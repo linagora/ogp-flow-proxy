@@ -13,7 +13,7 @@ function _generatePassword() {
 function _createTemplate(domainName, requestEmail) {
   const templateObject = _.cloneDeep(TEMPLATE);
 
-  const appName = `${domainName}.beta.data.gouv.fr`;
+  const appName = `${domainName}.ogp-toolbox.open-paas.org`;
   const adminPassword = _generatePassword();
 
   templateObject.Main = domainName + '_' + templateObject.Main;
