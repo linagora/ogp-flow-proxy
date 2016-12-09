@@ -7,26 +7,30 @@ const configDir = '/etc/nginx/conf.d/';
 const TEMPLATE = require('../../templates/stack-openpass.json');
 
 function create(opts, callback) {
-  const config = ''
-        + 'server {\n'
-        +   'listen 80; \n'
-        +   'listen 443 ssl; \n'
-        +   'ssl_certificate /etc/nginx/conf.d/nginx.crt; \n'
-        +   'ssl_certificate_key /etc/nginx/conf.d/nginx.key; \n'
-        +   `server_name ${opts.name}; \n`
-        +   'location / { \n'
-        +     'proxy_http_version 1.1; \n'
-        +     'proxy_set_header Upgrade $http_upgrade; \n'
-        +     'proxy_set_header Connection "Upgrade"; \n'
-        +     'proxy_set_header X-Real-IP $remote_addr; \n'
-        +     'proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n'
-        +     'proxy_set_header Host $http_host; \n'
-        +     'proxy_set_header X-NginX-Proxy true; \n'
-        +     'proxy_redirect off; \n'
-        +     'proxy_buffering off; \n'
-        +     `proxy_pass http://${opts.upstream}:${opts.port}; \n`
-        +   '} \n'
-        + '}';
+  const config = `
+      server {
+        listen         80;
+        server_name    ${opts.name};
+        return         301 https://$server_name$request_uri;
+      }
+      server {
+        listen 443 ssl;
+        ssl_certificate /etc/nginx/conf.d/nginx.crt;
+        ssl_certificate_key /etc/nginx/conf.d/nginx.key;
+        server_name ${opts.name};
+          location / {
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-NginX-Proxy true;
+            proxy_redirect off;
+            proxy_buffering off;
+            proxy_pass http://${opts.upstream}:${opts.port};
+          }
+        }`;
   const confPath = path.join(configDir, opts.upstream + '.conf');
 
   fs.access(confPath, fs.constants.F_OK, (err) => {
