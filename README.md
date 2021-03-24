@@ -1,3 +1,5 @@
+![Archived](https://img.shields.io/badge/Current_Status-archived-blue?style=flat)
+
 # Flow-proxy
 
 [![Build Status](https://travis-ci.org/linagora/ogp-flow-proxy.svg?branch=master)](https://travis-ci.org/linagora/ogp-flow-proxy)
